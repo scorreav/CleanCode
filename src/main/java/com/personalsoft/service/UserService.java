@@ -1,4 +1,4 @@
-package com.personalsoft;
+package com.personalsoft.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

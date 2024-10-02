@@ -1,14 +1,17 @@
 package com.personalsoft;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.personalsoft.service.UserService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+@ExtendWith(Mockito)
 class UserManagerTest {
     @Autowired
-    private UserManager userManager;
+    private UserService userManager;
 
     @Test
     void testUserOperations() {
