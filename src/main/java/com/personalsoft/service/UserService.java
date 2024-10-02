@@ -1,64 +1,54 @@
 package com.personalsoft.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import com.personalsoft.dto.UserDto;
+import com.personalsoft.model.User;
+import com.personalsoft.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.sql.Connection;
-import java.sql.Statement;
+
 import java.util.List;
-import java.util.Map;
 
 @Service
-public class UserManager {
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+@RequiredArgsConstructor
+public class UserService {
 
-    public void createUser(String username, String password) {
-        // Inyección SQL
-        String sql = "INSERT INTO users (username, password) VALUES ('" + username + "', '" + password + "')";
-        jdbcTemplate.execute(sql);
+    private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    public void createUser(UserDto userDto) {
+        var user = new User();
+        user.setUsername(userDto.getUsername());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        userRepository.save(user);
     }
 
-    public List<Map<String, Object>> getAllUsers() {
-        return jdbcTemplate.queryForList("SELECT * FROM users");
+    public List<UserDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::convertToDto)
+                .toList();
     }
 
     public void deleteUser(String username) {
-        // Más inyección SQL
-        jdbcTemplate.execute("DELETE FROM users WHERE username = '" + username + "'");
+        User user = userRepository.findByUsername(username);
+        if (user != null) {
+            userRepository.delete(user);
+        }
     }
 
     public void updateUser(String username, String newPassword) {
-        // Aún más inyección SQL
-        jdbcTemplate.execute("UPDATE users SET password = '" + newPassword + "' WHERE username = '" + username + "'");
-    }
-
-    // Método con alta complejidad ciclomática
-    public boolean isValidPassword(String password) {
-        if (password.length() < 8) {
-            return false;
-        } else if (!password.matches(".*[A-Z].*")) {
-            return false;
-        } else if (!password.matches(".*[a-z].*")) {
-            return false;
-        } else if (!password.matches(".*[0-9].*")) {
-            return false;
-        } else if (!password.matches(".*[!@#$%^&*()].*")) {
-            return false;
-        } else {
-            return true;
+        User user = userRepository.findByUsername(username);
+        if (user != null) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
         }
     }
 
-    // Mal manejo de errores
-    public void riskyOperation() {
-        try {
-            // Alguna operación riesgosa
-            Connection conn = jdbcTemplate.getDataSource().getConnection();
-            Statement stmt = conn.createStatement();
-            stmt.execute("DROP TABLE users");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private UserDto convertToDto(User user) {
+        UserDto dto = new UserDto();
+        dto.setUsername(user.getUsername());
+        dto.setPassword(user.getPassword());
+        return dto;
     }
 }

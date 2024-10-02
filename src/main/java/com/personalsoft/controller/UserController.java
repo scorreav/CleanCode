@@ -1,40 +1,39 @@
-package com.personalsoft;
+package com.personalsoft.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.personalsoft.dto.UserDto;
+import com.personalsoft.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserManager userManager;
+    private final UserService userService;
 
     @PostMapping
-    public void createUser(@RequestParam String username, @RequestParam String password) {
-        userManager.createUser(username, password);
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createUser(@RequestBody UserDto userDto) {
+        userService.createUser(userDto);
     }
 
     @GetMapping
-    public List<Map<String, Object>> getAllUsers() {
-        return userManager.getAllUsers();
+    public List<UserDto> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     @DeleteMapping("/{username}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable String username) {
-        userManager.deleteUser(username);
+        userService.deleteUser(username);
     }
 
     @PutMapping("/{username}")
-    public void updateUser(@PathVariable String username, @RequestParam String newPassword) {
-        userManager.updateUser(username, newPassword);
-    }
-
-    // Deserialización insegura
-    @PostMapping("/deserialize")
-    public void deserializeObject(@RequestBody String serializedObject) {
-        // Implementación de deserialización insegura
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateUser(@PathVariable String username, @RequestBody UserDto userDto) {
+        userService.updateUser(username, userDto.getPassword());
     }
 }
