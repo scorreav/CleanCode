@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Date;
+
 @Entity
 @Getter
 @Setter
@@ -21,4 +23,7 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @Column
+    private Date created;
 }
