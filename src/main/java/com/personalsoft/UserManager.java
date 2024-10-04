@@ -10,6 +10,7 @@ import java.util.Map;
 
 @Service
 public class UserManager {
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
