@@ -45,11 +45,4 @@ public class SingleResponsibility {
         return rta;
     }
 
-    public Consumer<List<Integer>> generateReport = integers -> integers.forEach(listEmployees -> System.out.println("Employee N° " + listEmployees));
-
-    public void reporte() {
-        for (Integer empleado: employees)
-            System.out.println(empleado);
-    }
-
 }
